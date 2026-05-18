@@ -1,0 +1,2138 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
+    <title>เค้ามีอะไรจะบอก...</title>
+    <link rel="preconnect" href="googleapis.com">
+    <link rel="preconnect" href="gstatic.com" crossorigin>
+    <link href="googleapis.com" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Mitr', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            background-color: #F7D6D8;
+            overflow: hidden;
+            height: 100%;
+            position: fixed;
+            width: 100vw;
+        }
+
+        .main-scroll-container {
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .section {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden; /* เพิ่มบรรทัดนี้เพื่อล็อกไม่ให้เนื้อหาทะลักออกนอกหน้าจอหลัก */
+}
+
+/* เพิ่ม CSS ตัวนี้ต่อท้ายลงไป เพื่อให้กล่องเก็บรูปเลื่อนขึ้น-ลงได้ภายในตัวเอง */
+.gallery-card {
+    max-height: 80vh; /* จำกัดความสูงของการ์ดไม่ให้เกินหน้าจอ */
+    overflow-y: auto;  /* เปิดให้เลื่อนขึ้นลงได้เฉพาะในการ์ดนี้ */
+    width: 100%;
+    max-width: 400px;
+    background-color: #ffffff;
+    border-radius: 20px;
+    padding: 20px;
+    /* ซ่อนแถบสกรอลล์บาร์แนวตั้งให้ดูคลีน (ถ้าต้องการ) */
+    scrollbar-width: none; 
+}
+.gallery-card::-webkit-scrollbar {
+    display: none; /* ซ่อนสกรอลล์บาร์สำหรับ Chrome, Safari */
+}
+
+
+        /* --------------------------------------
+           [หน้า 1] หน้าต้อนรับ
+        -------------------------------------- */
+        #welcome-page {
+            background: linear-gradient(135deg, #F7D6D8 0%, #F5C1C5 100%);
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .welcome-box {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 40px 20px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            max-width: 340px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(226, 123, 138, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .welcome-box h2 {
+            color: #4A4A4A;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .welcome-box p {
+            color: #6A6A6A;
+            font-size: 15px;
+            margin-bottom: 30px;
+        }
+
+        .btn-next-page {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background-color: #E27B8A;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15 rgba(226, 123, 138, 0.4);
+            transition: transform 0.2s;
+        }
+
+        /* --------------------------------------
+           [หน้า 2] หน้าไดอารี่ความทรงจำ
+        -------------------------------------- */
+        .memory-card {
+            background: #FFFDF9;
+            width: 100%;
+            max-width: 340px;
+            padding: 30px 20px;
+            border-radius: 24px;
+            box-shadow: 0 8px 24px rgba(234, 182, 185, 0.6);
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .memory-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin-bottom: 15px;
+            border: 2px solid #F5C1C5;
+        }
+
+        .memory-card h2 {
+            color: #4A4A4A;
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+
+        .memory-card p {
+            color: #6A6A6A;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        /* --------------------------------------
+           📝 [หน้า 3 ใหม่!] ใบสัญญารับผิดชอบความผิด
+        -------------------------------------- */
+        .promise-card {
+            background: #FFFDF9;
+            width: 100%;
+            max-width: 340px;
+            padding: 30px 20px;
+            border-radius: 24px;
+            box-shadow: 0 8px 24px rgba(234, 182, 185, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .promise-card h2 {
+            color: #E27B8A;
+            font-size: 22px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* รายการข้อตกลงใบสัญญา */
+        .promise-list {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        .promise-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 14.5px;
+            color: #5A5A5A;
+            line-height: 1.4;
+        }
+
+        /* ติ๊กถูกสีชมพูน่ารักๆ */
+        .promise-checkbox {
+            color: #E27B8A;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        /* --------------------------------------
+           [หน้า 4] หน้าการ์ดง้อแฟน
+        -------------------------------------- */
+        .card {
+            background: #FFFDF9;
+            width: 100%;
+            max-width: 340px;
+            padding: 35px 20px 85px 20px;
+            border-radius: 24px;
+            box-shadow: 0 8px 24px rgba(234, 182, 185, 0.6);
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gift-img {
+            width: 110px;
+            height: 110px;
+            object-fit: contain;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            color: #4A4A4A;
+            font-size: 22px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .card p {
+            color: #7A7A7A;
+            font-size: 14px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            height: 42px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            width: 120px;
+            height: 42px;
+        }
+
+        .btn-accept {
+            background-color: #E27B8A;
+            color: white;
+        }
+
+        .btn-reject {
+            background-color: #F1A5B1;
+            color: white;
+            position: absolute;
+            bottom: 35px;
+            right: 20px;
+            transition: left 0.15s ease-out, top 0.15s ease-out;
+        }
+
+        /* [ป๊อปอัปตอนจบหลังกดยกโทษ] */
+        .success-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s, visibility 0.4s;
+            padding: 20px;
+        }
+
+        .success-popup {
+            background: #FFFDF9;
+            width: 100%;
+            max-width: 320px;
+            padding: 30px 20px;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            border: 2px solid #FFF;
+            transform: scale(0.7);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .success-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .success-overlay.active .success-popup {
+            transform: scale(1);
+        }
+
+        .couple-img {
+            width: 160px;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            border: 3px solid #F1A5B1;
+        }
+
+        .success-popup h2 {
+            color: #E27B8A;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .heart-particle {
+            position: fixed;
+            bottom: -50px;
+            font-size: 24px;
+            user-select: none;
+            pointer-events: none;
+            z-index: 99999;
+            animation: floatUp 3s linear forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-110vh) translateX(var(--custom-x)) rotate(var(--custom-angle));
+                opacity: 0;
+            }
+        }
+
+        /* ==========================================
+   💝 ส่วนเสริมสไตล์หน้ากล่องของขวัญ และ รหัสผ่านวันครบรอบ
+========================================== */
+        #gift-page,
+        #password-page {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        #gift-page {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .gift-title {
+            color: #E27B8A;
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 0px #FFF, -1px -1px 0px #FFF;
+        }
+
+        .gift-box-img {
+            width: 220px;
+            height: 220px;
+            object-fit: contain;
+            margin-bottom: 30px;
+            animation: giftBounce 2s infinite ease-in-out;
+        }
+
+        @keyframes giftBounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .gift-sub-text {
+            color: #6A6A6A;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn-oval {
+            background-color: #E27B8A;
+            color: white;
+            padding: 10px 35px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(226, 123, 138, 0.4);
+        }
+
+        .password-card {
+            background-color: #F1A5B1;
+            width: 100%;
+            max-width: 340px;
+            padding: 35px 20px;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(234, 182, 185, 0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .password-card h2 {
+            color: white;
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .password-hint {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 11px;
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+
+        .pin-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            width: 100%;
+        }
+
+        .pin-input {
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border: none;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 600;
+            color: #4A4A4A;
+            outline: none;
+        }
+
+        .pin-input::-webkit-outer-spin-button,
+        .pin-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .error-message {
+            color: #D32F2F;
+            font-size: 13px;
+            min-height: 20px;
+            margin-bottom: 20px;
+            visibility: hidden;
+        }
+
+        .btn-confirm {
+            background-color: #E27B8A;
+            color: white;
+            padding: 10px 45px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* เพิ่มบรรทัดนี้เข้าไปในสไตล์ #gift-page, #password-page ตัวเดิม หรือใส่แยกไว้ก็ได้ครับ */
+        #password-page {
+            display: none;
+            /* ซ่อนหน้ารหัสผ่านไว้ก่อน รอจนกว่าจะกดปุ่มเปิดกล่อง */
+        }
+
+        /* ==========================================
+   🌸 สไตล์หน้าเลือกเมนู 4 บล็อก โทนชมพูหวาน
+========================================== */
+        #menu-page {
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            /* ซ่อนไว้ก่อนตั้งแต่แรก เปิดเมื่อใส่รหัสผ่านถูก */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #F7D6D8;
+        }
+
+        .menu-title {
+            color: #E27B8A;
+            font-size: 26px;
+            font-weight: 500;
+            margin-bottom: 25px;
+            text-shadow: 1px 1px 0px #FFF;
+        }
+
+        /* การจัดวางกล่องเมนูแบบ 2 คอลัมน์ ซ้าย-ขวา */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        /* ปุ่มเมนูสี่เหลี่ยมจัตุรัสขอบมนหนานุ่ม */
+        .menu-item {
+            background-color: #F1A5B1;
+            /* โทนชมพูเข้มแบบในรูป */
+            border: none;
+            border-radius: 24px;
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(234, 182, 185, 0.5);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .menu-item:active {
+            transform: scale(0.95);
+        }
+
+        /* ไอคอนจิ๋วประจำเมนู */
+        .menu-icon {
+            font-size: 28px;
+            line-height: 1;
+        }
+
+        /* ข้อความบรรยายในปุ่ม */
+        .menu-text {
+            color: white;
+            font-size: 13px;
+            font-weight: 400;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        /* ==========================================
+   📅 สไตล์หน้านับวันครบรอบเรียลไทม์ (Love Counter)
+========================================== */
+        #counter-page {
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            /* ซ่อนไว้ก่อน เปิดเฉพาะตอนกดจากเมนู */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #F7D6D8;
+        }
+
+        .counter-card {
+            background: #FFFDF9;
+            width: 100%;
+            max-width: 340px;
+            padding: 30px 20px;
+            border-radius: 24px;
+            box-shadow: 0 8px 24px rgba(234, 182, 185, 0.6);
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .counter-card h3 {
+            color: #4A4A4A;
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .main-days-num {
+            color: #4A4A4A;
+            font-size: 48px;
+            font-weight: 600;
+            line-height: 1.1;
+        }
+
+        .main-days-unit {
+            color: #7A7A7A;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .counter-img {
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            border: 2px solid #F5C1C5;
+        }
+
+        /* แถวกล่องสี่เหลี่ยมชมพู 4 กล่องด้านล่าง */
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            width: 100%;
+            margin-bottom: 25px;
+        }
+
+        .time-box {
+            background-color: #F1A5B1;
+            border-radius: 12px;
+            padding: 8px 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .time-box-num {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .time-box-unit {
+            font-size: 10px;
+            opacity: 0.9;
+        }
+
+        /* ==========================================
+   💌 สไตล์ระบบซองจดหมายและจดหมายกางเปิดอ่าน
+========================================== */
+        #letter-envelope-page,
+        #letter-content-page {
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            /* ซ่อนไว้รอคิวเปิดเล่นจากระบบ */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #F7D6D8;
+        }
+
+        /* อนิเมชันซองจดหมายขยับขึ้นลงลอยนุ่มๆ */
+        .envelope-img {
+            width: 220px;
+            height: 220px;
+            object-fit: contain;
+            margin-bottom: 25px;
+            animation: letterFloat 2.5s infinite ease-in-out;
+        }
+
+        @keyframes letterFloat {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .letter-heading {
+            font-size: 16px;
+            color: #4A4A4A;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        /* 📜 ตัวการ์ดจดหมายสีขาวนวลแนวนอนขอบมนกว้าง */
+        .letter-white-card {
+            background: #FFFDF9;
+            width: 100%;
+            max-width: 360px;
+            /* ยืดสัดส่วนแนวนอนสไตล์การ์ด */
+            padding: 35px 24px;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(234, 182, 185, 0.5);
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .letter-white-card h2 {
+            color: #4A4A4A;
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            letter-spacing: 0.3px;
+        }
+
+        .letter-white-card p {
+            color: #6A6A6A;
+            font-size: 13.5px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            font-weight: 400;
+        }
+
+        /* ==========================================
+   🎯 สไตล์ระบบเกมตอบคำถามวัดความรู้ใจ (Love Quiz)
+========================================== */
+        #quiz-page {
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            /* ซ่อนไว้รอเปิดจังหวะกดเลือกเมนู */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #F7D6D8;
+        }
+
+        /* กล่องการ์ดใหญ่พื้นหลังสีขาวนวลแบบในรูป */
+        .quiz-card {
+            background: #FFFDF9;
+            width: 100%;
+            max-width: 360px;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(234, 182, 185, 0.5);
+            position: relative;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+        }
+
+        /* เส้นประล้อมรอบด้านในขอบการ์ดหลัก */
+        .quiz-inner-border {
+            border: 2px dashed #F1A5B1;
+            /* เส้นประสีชมพูเข้มแบบในรูป */
+            border-radius: 14px;
+            padding: 25px 15px 15px 15px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ป้ายแสดงข้อ เช่น ข้อ 1/10 มุมซ้ายบน */
+        .quiz-badge {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            background: transparent;
+            border: 1px solid #E27B8A;
+            color: #4A4A4A;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* หัวข้อคำถาม */
+        .quiz-question {
+            color: #4A4A4A;
+            font-size: 16px;
+            font-weight: 500;
+            margin-top: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* กลุ่มปุ่มตัวเลือกช้อยส์ตอบคำถาม */
+        .quiz-options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        /* ปุ่มช้อยส์สีขาวขอบมน ตัวหนังสือสีฟ้าแบบในรูป */
+        .option-btn {
+            width: 100%;
+            background-color: #FFFDF9;
+            border: 1px solid #E27B8A;
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-size: 14px;
+            color: #1E88E5;
+            /* สีฟ้าสไตล์ตามรูปเป๊ะๆ ครับ */
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        /* เอฟเฟกต์เมื่อกดเลือกข้อนั้นๆ */
+        .option-btn.selected {
+            background-color: #F1A5B1;
+            color: white;
+            border-color: #F1A5B1;
+        }
+
+        /* ปุ่มสำหรับกดข้อต่อไป */
+        .btn-quiz-next {
+            background-color: #FFFDF9;
+            border: 1px solid #E27B8A;
+            color: #E27B8A;
+            padding: 6px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .btn-quiz-next:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ==========================================
+   ➡️ ระบบสไตล์ปุ่ม Next และ หน้าต่างสไลด์ขวา (ปุ่มง้อที่ร๊ากก)
+========================================== */
+        /* ==========================================
+   🔄 [ระบบสไตล์ปุ่มวงกลมมินิมอล สลับซ้าย-ขวา]
+========================================== */
+        #menu-page {
+            display: none;
+            /* เปิดใช้งานผ่านสคริปต์ปกติเมื่อรหัสถูกต้อง */
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden !important;
+            position: relative;
+            background-color: #F7D6D8;
+        }
+
+        .menu-horizontal-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block !important;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* หน้าแรกฝั่งซ้าย */
+        .menu-horizontal-slider>.menu-slide-section:nth-child(1) {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw !important;
+            height: 100vh;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* หน้าพิเศษฝั่งขวา */
+        .menu-horizontal-slider>.menu-slide-section:nth-child(2) {
+            position: absolute;
+            top: 0;
+            left: 100vw !important;
+            /* ล็อกพิกัดให้ไปรออยู่ด้านขวาของหน้าจอหลักเด็ดขาด */
+            width: 100vw !important;
+            height: 100vh;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #F7D6D8;
+        }
+
+        /* 🎯 ปุ่ม Next วงกลมเล็กๆ สีชมพูลอยอยู่ขอบขวาหน้าจอแบบที่นายชอบ */
+        .btn-next-right {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(241, 165, 177, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(234, 182, 185, 0.5);
+            z-index: 99;
+        }
+
+        /* 🎯 ปุ่ม Back วงกลมเล็กๆ สีชมพูลอยอยู่ขอบซ้ายหน้าจอแบบที่นายชอบ */
+        .btn-back-left {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(241, 165, 177, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(234, 182, 185, 0.5);
+            z-index: 99;
+        }
+
+        .menu-grid {
+            display: grid;
+            gap: 15px;
+            width: 100%;
+            max-width: 320px;
+        }
+        /* ==========================================
+/* ==========================================
+   📸 สไตล์หน้าแผงกริดรวมรูปคู่ความทรงจำ (Photo Grid Gallery)
+========================================== */
+/* ==========================================
+   ⚡ [โค้ดซ่อมบั๊กลูกกลิ้งล็อก - บังคับเลื่อนหน้ากริด] ⚡
+========================================== */
+#gallery-page {
+    width: 100vw;
+    height: 100vh;
+    display: none; /* เปิดผ่าน JS เมื่อกดอ่านต่อ */
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px 15px 120px 15px; /* เติมระยะเผื่อด้านล่าง 120px เพื่อไม่ให้เครื่องเล่นเพลงทับรูปท้ายสุด */
+    box-sizing: border-box;
+    background-color: #F7D6D8;
+    
+    /* 🌟 บังคับจุดนี้ให้เปิดเลื่อนไหลแนวตั้งอย่างเด็ดขาด */
+    overflow-y: scroll !important; 
+    -webkit-overflow-scrolling: touch; /* เพิ่มความลื่นเวลาปัดบนจอไอโฟน/มือถือ */
+}
+
+.gallery-card {
+    background: #FFFDF9;
+    width: 100%;
+    max-width: 360px;
+    padding: 25px 15px;
+    border-radius: 24px;
+    box-shadow: 0 8px 24px rgba(234, 182, 185, 0.6);
+    text-align: center;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    /* 🌟 ปลดล็อกความสูงของการ์ดขาวให้ยืดตามจำนวนรูป 20 รูปได้อิสระ */
+    height: auto !important; 
+    min-height: min-content;
+}
+
+.photo-grid-layout {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 25px;
+}
+
+.grid-photo-item {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 12px;
+    border: 1px solid rgba(226, 123, 138, 0.2);
+}
+
+/* --- ส่วนเสริมหน้าต่างป๊อปอัพรูปเต็มจอ --- */
+.lightbox-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999; /* ให้อยู่บนสุดของหน้าจอ */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85); /* พื้นหลังดำโปร่งแสง */
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.lightbox-modal.active {
+    display: flex;
+    opacity: 1;
+}
+.lightbox-content {
+    max-width: 90%;
+    max-height: 85%;
+    border-radius: 15px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+.lightbox-modal.active .lightbox-content {
+    transform: scale(1);
+}
+.close-btn {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: #ffffff;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+}
+
+    </style>
+</head>
+
+<body>
+    <!-- กล่องหน้า 1: หน้ากล่องของขวัญ -->
+    <div class="section" id="gift-page">
+        <h1 class="gift-title">เข้ามาแล้ววหรอค๊าบบ<br>ที่ร๊ากก</h1>
+        <img src="box.webp" alt="gift box" class="gift-box-img">
+        <p class="gift-sub-text">ของขวัญมาส่งแล้ว !</p>
+        <!--  โค้ดที่แก้ไขแล้ว (เปลี่ยนคำสั่งใน onclick) -->
+        <button class="btn-oval" onclick="showPasswordPage()">เปิดกล่อง</button>
+
+    </div>
+
+    <!-- กล่องหน้า 2: หน้าล็อกรหัสผ่านครบรอบ -->
+    <div class="section" id="password-page">
+        <div class="password-card">
+            <h2>กรอกรหัสผ่าน</h2>
+            <div class="password-hint"></div>
+            <div class="pin-container">
+                <input type="number" class="pin-input" maxlength="1" oninput="moveNext(this, 0)">
+                <input type="number" class="pin-input" maxlength="1" oninput="moveNext(this, 1)">
+                <input type="number" class="pin-input" maxlength="1" oninput="moveNext(this, 2)">
+                <input type="number" class="pin-input" maxlength="1" oninput="moveNext(this, 3)">
+                <input type="number" class="pin-input" maxlength="1" oninput="moveNext(this, 4)">
+                <input type="number" class="pin-input" maxlength="1" oninput="moveNext(this, 5)">
+            </div>
+            <div class="error-message" id="errorMsg">รหัสไม่ถูกต้อง</div>
+            <button class="btn-confirm" onclick="checkPassword()">ยืนยัน</button>
+        </div>
+    </div>
+
+    <!-- 🌟 [วางทับบรรทัด 897 ถึง 931 ได้เลยครับนาย] 🌟 -->
+    <!-- 🌟 [วางทับบล็อก id="menu-page" ดั้งเดิมในเครื่องของนายได้เลยครับ] 🌟 -->
+    <div id="menu-page">
+        <div class="menu-horizontal-slider" id="menuSlider">
+
+            <!-- ⬅️ [ฝั่งซ้าย: หน้ารวมเมนูหลัก 4 ปุ่มเดิมแบบดั้งเดิมของนาย + ลอยปุ่มวงกลมเล็กขวา] -->
+            <div class="menu-slide-section">
+                <!-- ปุ่มกด Next วงกลมเล็กๆ ลอยอยู่ขอบขวามือ จิ้มแล้วสไลด์ไปฝั่งขวา -->
+                <button class="btn-next-right" onclick="slideMenuRight()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </button>
+
+                <h1 class="menu-title">เลือกเมนู</h1>
+
+                <div class="menu-grid" style="grid-template-columns: repeat(2, 1fr);">
+                    <!-- ปุ่มที่ 1 -->
+                    <button class="menu-item" onclick="showCounterPage()">
+                        <span class="menu-icon">🍒</span>
+                        <span class="menu-text">เราคบกันกี่วันแล้วน๊าา<br>นานแค่ไหนน๊าา</span>
+                    </button>
+
+                    <!-- ปุ่มที่ 2 -->
+                    <button class="menu-item" onclick="showLetterEnvelope()">
+                        <span class="menu-icon">🐰</span>
+                        <span class="menu-text">จดหมายย<br>ถึงคนน่าร๊ากก</span>
+                    </button>
+
+                    <!-- ปุ่มที่ 3 -->
+                    <button class="menu-item" onclick="showQuizPage()">
+                        <span class="menu-icon">🧁</span>
+                        <span class="menu-text">เรารู้ใจกันน<br>มากแค่ไหนน้ออ</span>
+                    </button>
+
+                    <!-- ปุ่มที่ 4 -->
+                    <button class="menu-item" onclick="showMemoryAndScroll()">
+                        <span class="menu-icon">📷</span>
+                        <span class="menu-text">ความทรงจำาา</span>
+                    </button>
+
+                    <!-- 🚫 ลบปุ่มยาวๆ "ไปหน้าต่อไปจ้าา" ออกไปเรียบร้อยตามบรีฟครับ หน้าแรกจะกลับมาคลีนสวยเหมือนเดิม -->
+                </div>
+            </div>
+
+            <!-- ➡️ [ฝั่งขวา: หน้าพิเศษที่มีปุ่มสี่เหลี่ยมผืนผ้าใบสัญญา 1 บล็อก + ลอยปุ่มวงกลมเล็กซ้าย] -->
+            <div class="menu-slide-section">
+                <!-- ปุ่มกด Back วงกลมเล็กๆ ลอยอยู่ขอบซ้ายมือ จิ้มแล้วสไลด์ย้อนกลับไปหน้าแรก -->
+                <button class="btn-back-left" onclick="slideMenuLeft()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                </button>
+
+                <h1 class="menu-title">เมนูพิเศษ</h1>
+
+                <div class="menu-grid" style="grid-template-columns: repeat(2, 1fr);">
+
+                    <!-- 🎯 ปุ่มที่ 1 (ฝั่งขวา): บล็อกสี่เหลี่ยมผืนผ้าโค้งมนหนานุ่มสีชมพูเข้ม จิ้มแล้วพาสไลด์ดิ่งลงไปหน้าใบสัญญาความรับผิดชอบทันทีเป๊ะตามบรีฟ! -->
+                    <!-- ให้นายเปลี่ยนข้อความใน onclick ของปุ่มใบสัญญาเป็นแบบนี้ครับ -->
+                    <button class="menu-item" onclick="goToPromiseDirect()">
+                        <span class="menu-icon">📜</span>
+                        <span class="menu-text">ใบสัญญารับผิดชอบ<br>ความผิดความรัก 🤍</span>
+                    </button>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <!-- 🌟 กล่องหน้า 4 ใหม่: หน้านับวันครบรอบเรียลไทม์ 🌟 -->
+    <div class="section" id="counter-page">
+        <div class="counter-card">
+            <h3>ตั้งแต่วันแรกที่คบกันนน💖</h3>
+
+            <!-- ตัวเลขวันหลักขนาดใหญ่ตรงกลาง -->
+            <div class="main-days-num" id="mainDays">0</div>
+            <div class="main-days-unit">วัน</div>
+
+            <!-- ⭐ นายนำรูปคู่สลับมาใส่ตรง src="..." ตรงนี้ได้เลยครับ ⭐ -->
+            <img src="image.png" alt="together" class="counter-img">
+
+            <!-- แถวกล่องย่อย วัน-ชั่วโมง-นาที-วินาที วิ่งเรียลไทม์ -->
+            <div class="time-grid">
+                <div class="time-box">
+                    <span class="time-box-num" id="subDays">0</span>
+                    <span class="time-box-unit">วัน</span>
+                </div>
+                <div class="time-box">
+                    <span class="time-box-num" id="subHours">0</span>
+                    <span class="time-box-unit">ชั่วโมง</span>
+                </div>
+                <div class="time-box">
+                    <span class="time-box-num" id="subMinutes">0</span>
+                    <span class="time-box-unit">นาที</span>
+                </div>
+                <div class="time-box">
+                    <span class="time-box-num" id="subSeconds">0</span>
+                    <span class="time-box-unit">วินาที</span>
+                </div>
+            </div>
+
+            <!-- ปุ่มกดย้อนกลับไปหน้ารวมเมนูสีชมพูเข้ม -->
+            <button class="btn-oval" onclick="backToMenu()">ย้อนกลับ</button>
+        </div>
+    </div>
+
+    <!-- 🌟 กล่องหน้า 5 ใหม่: หน้าซองจดหมายจังหวะแรก 🌟 -->
+    <div class="section" id="letter-envelope-page">
+        <!-- ฝังรูปซองจดหมายโบว์เชอร์รี่ช่อดอกไม้ขยับดุ๊กดิ๊กตรงมูดให้เรียบร้อยครับ -->
+        <img src="peach-and-goma-peach-goma.gif" alt="cute envelope" class="envelope-img">
+        <div class="letter-heading">Happy Anniversary</div>
+        <button class="btn-oval" onclick="openActualLetter()">เปิดอ่าน</button>
+    </div>
+
+    <!-- 🌟 กล่องหน้า 6 ใหม่: หน้าตัวเนื้อหาการ์ดจดหมายซึ้งๆ จังหวะสอง 🌟 -->
+    <div class="section" id="letter-content-page">
+        <div class="letter-white-card">
+            <h2>Happy Anniversary</h2>
+            <!-- ⭐ นายสามารถเปลี่ยนพิมพ์คำบอกรักง้อแฟนเพิ่มยาวๆ ในนี้ได้ตามใจชอบเลยครับนาย ⭐ -->
+            <p>
+                จะครบรอบ 3 ปีของเราแล้วน๊าา🥺<br>
+                ขอบคุณณที่อยู่ข้างกันเสมออทั้งวันนที่ดีและวันที่ยากก<br>
+                ขอบคุณณที่เข้ามาเติมเต็มชีวิตของเราาให้มีความสุขขึ้นทุกวันน๊าา🥺<br>
+                รักแฟนนม๊ากกน๊าา🥺
+            </p>
+            <button class="btn-oval" onclick="closeLetterBackToMenu()">ปิด</button>
+        </div>
+    </div>
+    <!-- 🌟 กล่องหน้า 7 ใหม่: หน้าเกมตอบคำถามวัดใจ 🌟 -->
+    <div class="section" id="quiz-page">
+        <div class="quiz-card">
+            <!-- ป้ายระบุจำนวนข้อ -->
+            <div class="quiz-badge" id="quizProgress">ข้อ 1/10</div>
+
+            <div class="quiz-inner-border">
+                <!-- ตัวข้อความคำถามหลัก -->
+                <div class="quiz-question" id="questionText">เดทแรกของเราไปที่ไหน?</div>
+
+                <!-- กล่องรวมปุ่มตัวเลือกช้อยส์ตอบคำถาม -->
+                <div class="quiz-options-group" id="optionsContainer">
+                    <!-- ปุ่มช้อยส์จะถูกสร้างและยิงขึ้นมาจาก JavaScript โดยอัตโนมัติครับ -->
+                </div>
+
+                <!-- ปุ่มกดไปข้อถัดไปหรือดูคะแนนตอนจบ -->
+                <button class="btn-quiz-next" id="nextQuizBtn" onclick="submitAnswer()" disabled>ข้อต่อไป</button>
+            </div>
+        </div>
+    </div>
+
+        <!-- 🌟 [วางทับบล็อก id="gallery-page" ตัวเก่าในเครื่องของนายได้เลยครับ] 🌟 -->
+        <!-- 🌟 [วางทับบล็อก id="gallery-page" ตัวเก่าในเครื่องของนายได้เลยครับ] 🌟 -->
+    <div id="gallery-page">
+        <div class="gallery-card">
+            <h2>รูปของแฟนนเค้าาา💖</h2>
+            
+            <!-- 🧱 แผงตารางกริดรวมรูปคู่ 20 รูป (เรียงเป็นระเบียบ แถวละ 3 รูป เลื่อนลงล่างได้ยาวๆ) -->
+            <div class="photo-grid-layout">
+                <!-- แถวที่ 1 -->
+                <img src="p1.png.jfif" alt="photo 1" class="grid-photo-item">
+                <img src="p3.png.jfif" alt="photo 2" class="grid-photo-item">
+                <img src="p4.png.jfif" alt="photo 3" class="grid-photo-item">
+                
+                <!-- แถวที่ 2 -->
+                <img src="p5.png.jfif" alt="photo 4" class="grid-photo-item">
+                <img src="p6.png.jfif" alt="photo 5" class="grid-photo-item">
+                <img src="p7.png.jfif" alt="photo 6" class="grid-photo-item">
+                
+                <!-- แถวที่ 3 -->
+                <img src="p8.png.jfif" alt="photo 7" class="grid-photo-item">
+                <img src="p9.png.jfif" alt="photo 8" class="grid-photo-item">
+                <img src="p10.jfif" alt="photo 9" class="grid-photo-item">
+                
+                <!-- แถวที่ 4 -->
+                <img src="11.jfif" alt="photo 10" class="grid-photo-item">
+                <img src="p12.jfif" alt="photo 11" class="grid-photo-item">
+                <img src="p13.jfif" alt="photo 12" class="grid-photo-item">
+                
+                <!-- แถวที่ 5 -->
+                <img src="p14.jfif" alt="photo 13" class="grid-photo-item">
+                <img src="p15.jfif" alt="photo 14" class="grid-photo-item">
+                <img src="p16.jfif" alt="photo 15" class="grid-photo-item">
+                
+                <!-- แถวที่ 6 -->
+                <img src="p17.jfif" alt="photo 16" class="grid-photo-item">
+                <img src="p18.jfif" alt="photo 17" class="grid-photo-item">
+                <img src="p19.jfif" alt="photo 18" class="grid-photo-item">
+                
+                <!-- แถวที่ 7 -->
+                <img src="p20.jfif" alt="photo 19" class="grid-photo-item">
+                <img src="p21.jfif" alt="photo 20" class="grid-photo-item">
+            </div>
+            
+            <!-- ปุ่มย้อนกลับสไตล์เข้าเซ็ต วางล็อกไว้ท้ายสุดใต้รูปภาพเสมอ -->
+            <button class="menu-item" onclick="backToMenuFromGallery()" style="width: 100%; padding: 12px 10px; background-color: #F1A5B1; border-radius: 30px; box-shadow: none; margin-top: 15px;">
+                <span class="menu-text" style="font-weight: 500; color: white; font-size: 14px;">ย้อนกลับหน้าเมนู ⬅️</span>
+            </button>
+        </div>
+    </div>
+
+            <div id="lightbox" class="lightbox-modal"><span class="close-btn">&times;</span><img class="lightbox-content" id="lightbox-img" src="" alt="รูปขยายใหญ่"></div>
+
+
+        </div>
+    </div>
+
+
+    <div class="main-scroll-container" id="mainContainer">
+
+
+        <!-- 🌟 [หน้า 2] หน้าข้อความระลึกความทรงจำคำง้อ 🌟 -->
+        <div class="section" id="memory-page">
+            <div class="memory-card">
+                <!-- โค้ดแก้กรอบรูปหน้าที่ 2 โชว์ระยะตัวกว้างขึ้น + ลบข้อความบั๊กหลุด -->
+                <img src="p2.png.jfif" class="memory-img" style="
+    width: 100%;
+    height: 260px; /* ขยายความสูงขึ้นเพื่อให้รูปคลายตัวออก เห็นช่วงตัวเพิ่มขึ้น */
+    object-fit: cover;
+    object-position: center 9%; /* ควบคุมมุมกล้องให้อยู่ระดับสายตาพอดี ไม่ซูมจม */
+    border-radius: 16px;
+    margin-bottom: 15px;
+    border: 2px solid #F5C1C5;
+">
+
+
+                <h2>ความทรงจำ 🤍</h2>
+                <p>
+                    ตลอดเวลาที่อยู่ด้วยกันน เค้ามีความสุขมากกๆ ขอบคุณที่คอยอยู่ข้างงๆ คอยดื้อคอยยิ้มไปด้วยกันน
+                    เค้าขอโทษที่ทำให้ที่ร๊ากกเสียใจ เค้าไม่ได้ตั้งใจจ🥺
+                    อยากให้เรากลับมาจับมือกันเหมือนเดิมนะเค้ารักกที่ร๊ากกมากกๆน๊าา🥺💖
+                </p>
+                <!--  โค้ดที่แก้ไขแล้ว (เปลี่ยนไปใช้ฟังก์ชันเจาะจงไอดีหน้าใบสัญญา) -->
+                <!-- แก้ไขคำสั่งปุ่มในหน้าความทรงจำ (memory-page) ให้เป็นแบบนี้ครับนาย -->
+<button class="btn-oval" onclick="openGalleryPage()">อ่านต่ออีกนิดน๊าาา 🤨</button>
+
+
+            </div>
+        </div>
+
+        <!-- 🌟 [หน้า 3 ใหม่!] ใบสัญญารับผิดชอบความผิด 🌟 -->
+        <div class="section" id="promise-page">
+            <div class="promise-card">
+
+
+                <h2>📝 ใบสัญญารับผิดชอบความผิด</h2>
+
+                <div class="promise-list">
+                    <!-- ⭐ นายสามารถเพิ่ม/แก้ไขข้อตกลงคำมั่นสัญญาเอาใจแฟนได้ตามชอบตรงนี้เลยครับ ⭐ -->
+                    <div class="promise-item">
+                        <span class="promise-checkbox">✔</span>
+                        <span>ต่อไปนี้เค้าสัญญาว่าจะไม่ดื้ออ ไม่ทำตัวน่ารำคาญใจอีกแล้ววว</span>
+                    </div>
+                    <div class="promise-item">
+                        <span class="promise-checkbox">✔</span>
+                        <span>เค้าจะไม่ทำตัวแบบนี้แล้วว ที่ร๊ากเค้ากลับบ้านนจะรีบโทรหาเลยย</span>
+                    </div>
+                    <div class="promise-item">
+                        <span class="promise-checkbox">✔</span>
+                        <span>ถ้าที่ร๊ากกงอน เค้าจะรีบเดินหน้าง้ออทันที </span>
+                    </div>
+
+                </div>
+
+                <!-- โค้ดปุ่มกดที่หน้าใบสัญญา (promise-page) -->
+                <button class="btn-next-page"
+                  onclick="document.getElementById('apology-page').style.display = 'block'; document.getElementById('cardContainer').style.margin = '0 auto'; document.getElementById('cardContainer').scrollIntoView({behavior: 'smooth', block: 'center'})"
+
+>
+                    รับทราบข้อตกลงแล้วหน้าถัดไป 📜
+                </button>
+
+            </div>
+        </div>
+
+
+        
+        <!-- 🌟 [หน้า 4] หน้าการ์ดง้อปุ่มวิ่งหนี 🌟 -->
+        <div class="section" id="apology-page">
+            <div class="card" id="cardContainer">
+                <!--  วางแท็กรูปภาพ GIF ตัวนี้แทนที่เพื่อแสดงผลแมวขยับได้ -->
+                <img src="peach-goma-peach-and-goma.gif" alt="crying cat gif" class="gift-img" style="
+    width: 120px; 
+    height: 120px; 
+    object-fit: contain; 
+    margin-bottom: 15px;
+">
+
+
+                <h1>ที่ร๊ากก...ยกโทษให้เค้าได้ไหมม</h1>
+                <p>เค้ารู้ว่าเค้าผิดให้อภัยเค้าได้มั้ยยย ดีกันนน๊าาา🥺</p>
+
+                <div class="btn-group">
+                    <button class="btn btn-accept" onclick="forgive()"
+                        style="position: absolute; bottom: 35px; left: 20px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        ยกโทษ
+                    </button>
+
+                    <button class="btn btn-reject" id="noBtn" onmouseover="moveButton()" onclick="moveButton()"
+                        ontouchstart="moveButton(event)">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                        ไม่ยกโทษ
+                    </button>
+                </div>
+                
+            </div>
+            
+        </div>
+
+    </div>
+
+    <!-- [ป๊อปอัปตอนจบหลังกดยกโทษ] -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-popup">
+            <!-- ⭐ เปลี่ยนรูปคู่ตอนจบตรงนี้นะครับ ⭐ -->
+            <img src="image.png" alt="couple" class="couple-img">
+            <h2>รักที่ร๊ากกที่สุดเล๊ยย 🥺💖</h2>
+        </div>
+    </div>
+
+    <script>
+       // ⚡ โค้ดแก้บั๊กล็อกล้อเมาส์และนิ้วปัดหน้าจอ เวอร์ชันฉลาด หายขาด 100% ⚡
+
+window.addEventListener('wheel', function(e) {
+    // เช็กว่าถ้าหน้าอัลบั้มรูป (gallery-page) กำลังเปิดแสดงผลอยู่ ให้ข้ามการล็อกทันที ปล่อยให้เลื่อนได้ปกติ!
+    const galleryPage = document.getElementById('gallery-page');
+    if (galleryPage && galleryPage.style.display === 'flex') {
+        return; // ปล่อยผ่าน เลื่อนล้อเมาส์ได้ปกติ
+    }
+    e.preventDefault(); // ถ้าอยู่หน้าอื่น ให้ล็อกตามเดิม
+}, { passive: false });
+
+window.addEventListener('touchmove', function(e) {
+    // เช็กว่าถ้าหน้าอัลบั้มรูป (gallery-page) กำลังเปิดแสดงผลอยู่ ให้ข้ามการล็อกทันที ปล่อยให้นิ้วปัดรูดจอได้ปกติ!
+    const galleryPage = document.getElementById('gallery-page');
+    if (galleryPage && galleryPage.style.display === 'flex') {
+        return; // ปล่อยผ่าน ใช้นิ้วรูดจอเลื่อนลงบนมือถือได้ปกติ
+    }
+    e.preventDefault(); // ถ้าอยู่หน้าอื่น ให้ล็อกตามเดิม
+}, { passive: false });
+
+
+        function moveToPage(pageIndex) {
+            const container = document.getElementById('mainContainer');
+            container.style.transform = `translateY(-${pageIndex * 100}vh)`;
+        }
+
+        function moveButton(e) {
+            if (e) e.preventDefault();
+            const btn = document.getElementById('noBtn');
+            const card = document.getElementById('cardContainer');
+
+            const padding = 15;
+            const maxX = card.clientWidth - btn.offsetWidth - padding;
+            const maxY = card.clientHeight - btn.offsetHeight - padding;
+
+            const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
+
+            btn.style.left = randomX + 'px';
+            btn.style.top = randomY + 'px';
+        }
+
+        function forgive() {
+            document.getElementById('successOverlay').classList.add('active');
+            for (let i = 0; i < 50; i++) {
+                setTimeout(createHeart, i * 60);
+            }
+        }
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart-particle');
+            const heartTypes = ['❤️', '💖', '💝', '💕', '💗', '💓'];
+            heart.innerText = heartTypes[Math.floor(Math.random() * heartTypes.length)];
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.fontSize = Math.random() * 20 + 20 + 'px';
+            heart.style.setProperty('--custom-x', (Math.random() * 200 - 100) + 'px');
+            heart.style.setProperty('--custom-angle', (Math.random() * 360) + 'deg');
+            heart.style.animationDuration = Math.random() * 1.5 + 2 + 's';
+            document.body.appendChild(heart);
+            setTimeout(() => { heart.remove(); }, 3500);
+        }
+    </script>
+
+    <!-- ==========================================
+     🎵 [โค้ดระบบเครื่องเล่นเพลงสไตล์มินิมอล] 
+========================================== -->
+    <!-- ส่วนโครงสร้างหน้าตาเครื่องเล่นเพลงด้านล่าง (เวอร์ชันโทนสีชมพู) -->
+    <div class="music-player-bar" style="
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 450px;
+    background: rgba(255, 255, 255, 0.85); /* เปลี่ยนพื้นหลังเป็นกระจกฝ้าสีขาวนวล */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(226, 123, 138, 0.2); /* ขอบสีชมพูจางๆ */
+    border-radius: 16px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 999999;
+    color: #4A4A4A; /* ปรับสีตัวอักษรให้อ่านง่ายบนพื้นขาว */
+    font-family: 'Inter', sans-serif;
+    box-shadow: 0 8px 32px rgba(226, 123, 138, 0.25); /* เงาสะท้อนโทนชมพู */
+    user-select: none;
+">
+        <!-- กล่องไอคอนโน้ตเพลงซ้ายสุด (พื้นหลังชมพูอ่อน ไอคอนชมพูเข้ม) -->
+        <div
+            style="background: #F7D6D8; width: 44px; height: 44px; border-radius: 10px; display: flex; justify-content: center; align-items: center; flex-shrink: 0; color: #E27B8A;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+            </svg>
+        </div>
+
+        <!-- โซนข้อมูลเพลงและแถบเวลา -->
+        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 4px; overflow: hidden;">
+            <!-- ชื่อเพลง (สีเทาเข้ม) -->
+            <div id="playerSongTitle"
+                style="font-size: 14px; font-weight: 600; color: #4A4A4A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.3px;">
+                D3ATH</div>
+
+            <!-- แถบความคืบหน้าและตัวเลขเวลา -->
+            <div
+                style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #7A7A7A; font-family: monospace;">
+                <span id="playerCurrentTime">0:00</span>
+                <div style="flex-grow: 1; height: 4px; background: rgba(226, 123, 138, 0.2); border-radius: 2px; position: relative; cursor: pointer;"
+                    onclick="seekAudio(event)">
+                    <!-- หลอดวิ่งเวลาสีชมพูหวาน -->
+                    <div id="playerProgressBar"
+                        style="position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: #E27B8A; border-radius: 2px; transition: width 0.1s linear;">
+                    </div>
+                </div>
+                <span id="playerDuration">3:01</span>
+            </div>
+        </div>
+
+        <!-- โซนปุ่มควบคุมไอคอน (เปลี่ยนเป็นสีชมพูเข้ม #E27B8A ทั้งเซ็ต) -->
+        <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0; color: #E27B8A;">
+            <!-- ปุ่มเพลงก่อนหน้า -->
+            <button onclick="prevTrack()"
+                style="background: none; border: none; color: inherit; cursor: pointer; display: flex;"><svg width="16"
+                    height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
+                </svg></button>
+
+            <!-- ปุ่มเล่น / หยุด -->
+            <button onclick="togglePlay()"
+                style="background: none; border: none; color: inherit; cursor: pointer; display: flex;">
+                <svg id="playIcon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"
+                    style="display: none;">
+                    <path d="M8 5v14l11-7z" />
+                </svg>
+                <svg id="pauseIcon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                </svg>
+            </button>
+
+            <!-- ปุ่มเพลงถัดไป -->
+            <button onclick="nextTrack()"
+                style="background: none; border: none; color: inherit; cursor: pointer; display: flex;"><svg width="16"
+                    height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 18l8.5-6L6 6zm10-12h2v12h-2z" />
+                </svg></button>
+        </div>
+    </div>
+
+
+    <!-- แท็กเสียง Audio ลับสำหรับควบคุมระบบเพลงหลังบ้าน -->
+    <audio id="mainAudio" loop></audio>
+
+    <!-- สคริปต์ JavaScript ระบบสลับเพลง คำนวณเวลา และ Autoplay -->
+    <script>
+        // 🎵 รายชื่อคิวเพลง (นายสามารถนำลิงก์ไฟล์เพลง .mp3 ของตัวเองมาเปลี่ยนในช่อง url ได้เลยครับ)
+        const playlist = [
+            { title: "I Just Wanna Know", duration: "4:38", url: "https://www.dropbox.com/scl/fi/aas0a0vkdk6ppt06kpqtq/PUN-I-Just-Wanna-Know-mp3j.cc.mp3?rlkey=1prk1rqrmmbvieqelczcrzh9w&st=177h8y8j&raw=1" },
+            { title: "มากกว่ารัก", duration: "2:04", url: "https://www.dropbox.com/scl/fi/o1bcu6838qb5qyhuuqyyl/SARAN-X-BlackHeart-REMIX-VERSION.mp3?rlkey=f4qpcf0zuc9l16jnfryi7lrm1&st=u473pu6x&raw=1" },
+            { title: "ขอบคุณ", duration: "5:01", url: "https://www.dropbox.com/scl/fi/zu4taz36o5jksnd6u0mhy/WANYAi-l-Thankful-Official-MV.mp3?rlkey=d749g4neg52h0rgz7ge2iwfd3&st=m34x1f68&raw=1" },
+            // { title: "นิทานในฝัน", duration: "3:53", url: "https://www.dropbox.com/scl/fi/aas0a0vkdk6ppt06kpqtq/PUN-I-Just-Wanna-Know-mp3j.cc.mp3?rlkey=1prk1rqrmmbvieqelczcrzh9w&st=177h8y8j&raw=1" },
+        ];
+
+        let currentTrackIndex = 0;
+        const audio = document.getElementById('mainAudio');
+        const progressBar = document.getElementById('playerProgressBar');
+        const currentTimeText = document.getElementById('playerCurrentTime');
+
+        // ฟังก์ชันสำหรับโหลดและเริ่มเล่นเพลง
+        function loadTrack(index) {
+            currentTrackIndex = index;
+            const track = playlist[currentTrackIndex];
+            audio.src = track.url;
+            document.getElementById('playerSongTitle').innerText = track.title;
+            document.getElementById('playerDuration').innerText = track.duration;
+            audio.load();
+        }
+
+        function playTrack() {
+            audio.play().then(() => {
+                document.getElementById('playIcon').style.display = 'none';
+                document.getElementById('pauseIcon').style.display = 'block';
+            }).catch(err => {
+                console.log("บราวเซอร์บล็อกการเปิดเสียงอัตโนมัติชั่วคราว: ต้องให้ผู้ใช้คลิกหน้าจอก่อน 1 ครั้ง");
+            });
+        }
+
+        function togglePlay() {
+            if (audio.paused) {
+                playTrack();
+            } else {
+                audio.pause();
+                document.getElementById('playIcon').style.display = 'block';
+                document.getElementById('pauseIcon').style.display = 'none';
+            }
+        }
+
+        function nextTrack() {
+            let nextIndex = currentTrackIndex + 1;
+            if (nextIndex >= playlist.length) nextIndex = 0; // เล่นครบ 3 เพลงให้วนกลับมาเพลงแรก
+            loadTrack(nextIndex);
+            playTrack();
+        }
+
+        function prevTrack() {
+            let prevIndex = currentTrackIndex - 1;
+            if (prevIndex < 0) prevIndex = playlist.length - 1; // วนกลับไปเพลงสุดท้าย
+            loadTrack(prevIndex);
+            playTrack();
+        }
+
+        // ฟังก์ชันคำนวณเวลาจัดรูปแบบเป็น นาที:วินาที ตัวเลขสองหลัก
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        // อัปเดตแถบสีขาววิ่งตามเวลาจริงของเพลง
+        audio.addEventListener('timeupdate', () => {
+            if (audio.duration) {
+                const percentage = (audio.currentTime / audio.duration) * 100;
+                progressBar.style.width = percentage + '%';
+                currentTimeText.innerText = formatTime(audio.currentTime);
+            }
+        });
+
+        // ฟังก์ชันคลิกข้ามเวลาบนแถบโปรเกรสได้เหมือนในรูปคอมพิวเตอร์
+        function seekAudio(event) {
+            const bar = event.currentTarget;
+            const clickX = event.offsetX;
+            const width = bar.clientWidth;
+            const clickPercentage = clickX / width;
+            if (audio.duration) {
+                audio.currentTime = clickPercentage * audio.duration;
+            }
+        }
+
+        // เริ่มต้นระบบตั้งแต่วินาทีแรกที่เปิดเว็บ
+        loadTrack(0);
+
+        // 🚀 [ปลดล็อกระบบเล่นอัตโนมัติ] บราวเซอร์ยุคนี้บังคับให้คนใช้ต้องแตะหน้าจอ 1 ครั้งถึงจะเปิดเสียงได้ 
+        // โค้ดนี้จะช่วยสั่งให้เพลงเล่นทันทีที่แฟนกดยอมรับหน้าแรกหรือแตะส่วนใดส่วนหนึ่งของเว็บครับ
+        document.addEventListener('click', function startAutoplay() {
+            playTrack();
+            document.removeEventListener('click', startAutoplay); // เล่นแล้วเอาตัวดักฟังออกทันที
+        }, { once: true });
+    </script>
+    <!-- ========================================== -->
+    <!-- ==========================================
+     🔊 [โค้ดแถบปรับเสียง/ปิดเสียง มุมซ้ายบน]
+========================================== -->
+    <!-- โครงสร้างแถบควบคุมเสียงมุมซ้ายบน (เวอร์ชันโทนสีชมพูหวาน) -->
+    <div class="volume-control-box" style="
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.85); /* เปลี่ยนพื้นหลังเป็นกระจกฝ้าสีขาวนวล */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(226, 123, 138, 0.2); /* ขอบสีชมพูจางๆ */
+    border-radius: 12px;
+    padding: 8px 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 999999;
+    color: #E27B8A; /* เปลี่ยนไอคอนลำโพงเป็นสีชมพูเข้ม */
+    box-shadow: 0 4px 15px rgba(226, 123, 138, 0.15); /* เงาสะท้อนโทนชมพูอ่อน */
+    user-select: none;
+">
+        <!-- ปุ่มไอคอนลำโพง เปิด/ปิด เสียง (สีสืบทอดเป็นสีชมพูอัตโนมัติ) -->
+        <button onclick="toggleMute()" id="volBtn"
+            style="background: none; border: none; color: inherit; cursor: pointer; display: flex; padding: 0; opacity: 0.9;">
+            <svg id="speakerIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                    d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+            </svg>
+            <svg id="muteIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                <path
+                    d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.21.05-.42.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" />
+            </svg>
+        </button>
+
+        <!-- สไลเดอร์หลอดปรับระดับความดังเสียง (พื้นหลอดสีชมพูอ่อน) -->
+        <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.8" oninput="changeVolume(this.value)"
+            style="
+        -webkit-appearance: none;
+        appearance: none;
+        width: 80px;
+        height: 6px;
+        background: rgba(226, 123, 138, 0.2);
+        border-radius: 3px;
+        outline: none;
+        cursor: pointer;
+    ">
+    </div>
+
+
+    <style>
+        /* สไตล์ตกแต่งเพิ่มเติมสำหรับตัวหลอดสไลเดอร์ปรับเสียง */
+        #volumeSlider::-webkit-slider-runnable-track {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        #volumeSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+            margin-top: -3px;
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+        }
+
+        #volumeSlider::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+
+    <script>
+        // สคริปต์เชื่อมต่อตัวควบคุมเสียงเข้ากับแท็กเสียงหลัก (#mainAudio) ของเครื่องเล่นเพลงเดิม
+        let lastVolume = 0.8;
+
+        function changeVolume(val) {
+            const mainAudio = document.getElementById('mainAudio');
+            if (mainAudio) {
+                mainAudio.volume = val;
+
+                // ปรับเปลี่ยนไอคอนลำโพงตามความดังอัตโนมัติ
+                if (val == 0) {
+                    document.getElementById('speakerIcon').style.display = 'none';
+                    document.getElementById('muteIcon').style.display = 'block';
+                } else {
+                    document.getElementById('speakerIcon').style.display = 'block';
+                    document.getElementById('muteIcon').style.display = 'none';
+                }
+            }
+        }
+
+        // ฟังก์ชันเปิด-ปิดเสียงทันทีเมื่อกดที่ตัวไอคอนลำโพง
+        function toggleMute() {
+            const mainAudio = document.getElementById('mainAudio');
+            const slider = document.getElementById('volumeSlider');
+            if (!mainAudio) return;
+
+            if (mainAudio.volume > 0) {
+                lastVolume = mainAudio.volume;
+                mainAudio.volume = 0;
+                slider.value = 0;
+                document.getElementById('speakerIcon').style.display = 'none';
+                document.getElementById('muteIcon').style.display = 'block';
+            } else {
+                mainAudio.volume = lastVolume;
+                slider.value = lastVolume;
+                document.getElementById('speakerIcon').style.display = 'block';
+                document.getElementById('muteIcon').style.display = 'none';
+            }
+        }
+
+        // สั่งตั้งค่าระดับเสียงเริ่มต้นให้ตัวเพลงหลักทำงานสอดคล้องกับค่าเริ่มต้นของสไลเดอร์ (80%)
+        document.addEventListener("DOMContentLoaded", () => {
+            const mainAudio = document.getElementById('mainAudio');
+            if (mainAudio) mainAudio.volume = 0.8;
+        });
+
+
+    </script>
+
+
+    <!-- สคริปต์ชุดใหม่ควบคุมระบบรหัสผ่านและสั่งเลื่อนสไลด์เฉพาะส่วน -->
+    <script>
+        const pinInputs = document.querySelectorAll('.pin-input');
+
+        function moveNext(input, index) {
+            if (input.value.length > 1) {
+                input.value = input.value.slice(0, 1);
+            }
+            if (input.value !== "" && index < 5) {
+                pinInputs[index + 1].focus();
+            }
+        }
+
+        function checkPassword() {
+            let enteredPin = "";
+            pinInputs.forEach(input => {
+                enteredPin += input.value;
+            });
+
+            if (enteredPin === "240566") {
+                document.getElementById('errorMsg').style.visibility = 'hidden';
+
+                // 🌟 แก้ไข 3 บรรทัดนี้: สั่งซ่อนหน้าเก่า แล้วเปิดหน้าเมนูชมพูเข้มเด้งขึ้นมา 100%
+                document.getElementById('gift-page').style.display = 'none';
+                document.getElementById('password-page').style.display = 'none';
+                document.getElementById('menu-page').style.display = 'flex'; // สั่งเปิดหน้าเมนูทันที!
+
+                const mainAudio = document.getElementById('mainAudio');
+                if (mainAudio) mainAudio.play();
+            } else {
+                document.getElementById('errorMsg').style.visibility = 'visible';
+                pinInputs.forEach(input => input.value = "");
+                pinInputs.focus();
+            }
+        }
+
+
+        // ฟังก์ชันสั่งสลับจากหน้ากล่องของขวัญไปหน้ารหัสผ่าน
+        function showPasswordPage() {
+            document.getElementById('gift-page').style.display = 'none';
+            document.getElementById('password-page').style.display = 'flex';
+        }
+
+    </script>
+
+    <script>
+        // 📅 สคริปต์ระบบคำนวณเวลา Love Counter เรียลไทม์วินาทีต่อวินาที
+
+        // ตั้งค่าวันครบรอบเริ่มต้นของนาย: ปี ค.ศ. 2023, เดือน พ.ค. (เลขระบบคือเดือน 4), วันที่ 24, เวลา 00:00:00
+        const startDate = new Date(2023, 4, 24, 0, 0, 0);
+
+        function updateLoveCounter() {
+            const now = new Date();
+            const diffValue = now - startDate; // หาช่วงเวลาห่างกันเป็นมิลลิวินาที
+
+            // สูตรคำนวณแปลงหน่วยเวลาสากล
+            const totalDays = Math.floor(diffValue / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diffValue % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diffValue % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diffValue % (1000 * 60)) / 1000);
+
+            // ยิงตัวเลขที่ได้อัปเดตลงหน้าต่างเว็บสดๆ
+            document.getElementById('mainDays').innerText = totalDays;
+            document.getElementById('subDays').innerText = totalDays;
+            document.getElementById('subHours').innerText = hours;
+            document.getElementById('subMinutes').innerText = minutes;
+            document.getElementById('subSeconds').innerText = seconds;
+        }
+
+        // สั่งให้สคริปต์ลูปทำงานคำนวณเวลาใหม่ทุกๆ 1 วินาที (1000 มิลลิวินาที) แบบเรียลไทม์
+        setInterval(updateLoveCounter, 1000);
+        updateLoveCounter(); // รันครั้งแรกทันทีก่อนไม่ต้องรอลูป
+
+        // ฟังก์ชันสำหรับเปิด-ปิดสลับหน้าต่าง
+        function showCounterPage() {
+            document.getElementById('menu-page').style.display = 'none';
+            document.getElementById('counter-page').style.display = 'flex';
+        }
+
+        function backToMenu() {
+            document.getElementById('counter-page').style.display = 'none';
+            document.getElementById('menu-page').style.display = 'flex';
+        }
+    </script>
+    <script>
+        // 💌 ฟังก์ชันสำหรับระบบหน้าต่างจดหมายสลับหน้า
+        function showLetterEnvelope() {
+            document.getElementById('menu-page').style.display = 'none';
+            document.getElementById('letter-envelope-page').style.display = 'flex';
+        }
+
+        function openActualLetter() {
+            document.getElementById('letter-envelope-page').style.display = 'none';
+            document.getElementById('letter-content-page').style.display = 'flex';
+        }
+
+        function closeLetterBackToMenu() {
+            document.getElementById('letter-content-page').style.display = 'none';
+            document.getElementById('menu-page').style.display = 'flex';
+        }
+    </script>
+    <script>
+        // 💌 ฟังก์ชันสำหรับระบบหน้าต่างจดหมายสลับหน้า
+        function showLetterEnvelope() {
+            document.getElementById('menu-page').style.display = 'none';
+            document.getElementById('letter-envelope-page').style.display = 'flex';
+        }
+
+        function openActualLetter() {
+            document.getElementById('letter-envelope-page').style.display = 'none';
+            document.getElementById('letter-content-page').style.display = 'flex';
+        }
+
+        function closeLetterBackToMenu() {
+            document.getElementById('letter-content-page').style.display = 'none';
+            document.getElementById('menu-page').style.display = 'flex';
+        }
+    </script>
+    <script>
+        // 🎯 ระบบควิซเกมคำถามวัดใจ 10 ข้อเรียบร้อยครับนาย
+        // ⭐ นายสามารถเข้ามาเปลี่ยนข้อความคำถาม ตัวเลือกช้อยส์ และแก้ตัวเลขเฉลย (correct) ได้ตามชอบตรงนี้เลยครับ
+        const quizData = [
+            { q: "เค้าหล่ออมั้ยย?", options: ["หล่อที่สุดด", "กลางๆ", "งั้นนๆ", "ไม่หล่อเลยย"], correct: 0 },
+            { q: "เค้าชอบกินอะไรมากที่สุด?", options: ["ปลา", "ไก่", "เผ็ด", "ขนม"], correct: 1 },
+            { q: "เค้าชอบสีอะไรมากที่สุด?", options: ["สีฟ้า", "สีแดง", "สีดำ", "สีขาว"], correct: 2 },
+            { q: "วันครบรอบของเราคือวันที่เท่าไหร่?", options: ["24 มกราคม", "24 พฤษภาคม", "14 กุมภาพันธ์", "12 สิงหาคม"], correct: 1 },
+            { q: "เค้าเกิดวันอะไร?", options: ["วันจันทร์", "วันพุธ", "วันศุกร์", "วันเสาร์"], correct: 2 },
+            { q: "เค้าแข็งแรงมั้ยย?", options: ["ไม่อ่ะ", "อาจจะยัง", "นิดหน่อย", "สุดๆเล๊ยย"], correct: 3 },
+            { q: "เวลาเค้างอน เค้าชอบทำแบบไหน?", options: ["เงียบไม่พูดด้วย", "ทำหน้าา", "บอกตรงๆ", "ไม่รับสายย"], correct: 1 },
+            { q: "เค้าทักแฟนครั้งแรกว่าอะไร?", options: ["ทักคั้บบ", "ดีคับ", "สุดสวยคับบ", "ทักก"], correct: 0 },
+            { q: "เค้าชอบทำอะไรในสายย?", options: ["ชัก", "มินิฮาท", "จุ๊บบ", "ชมสวยย"], correct: 1 },
+            { q: "แฟนรักกเค้ามากแค่่ไหนน?", options: ["นิดนึง", "ปานกลาง", "มากที่สุดในโลกกกก", "ไม่รักเลย"], correct: 2 }
+        ];
+
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+        let selectedOptionIndex = null;
+
+        function showQuizPage() {
+            document.getElementById('menu-page').style.display = 'none';
+            document.getElementById('quiz-page').style.display = 'flex';
+            currentQuizIndex = 0;
+            quizScore = 0;
+            loadQuiz();
+        }
+
+        function loadQuiz() {
+            selectedOptionIndex = null;
+            document.getElementById('nextQuizBtn').disabled = true;
+            document.getElementById('nextQuizBtn').innerText = (currentQuizIndex === quizData.length - 1) ? "ดูคะแนน" : "ข้อต่อไป";
+
+            const currentData = quizData[currentQuizIndex];
+            document.getElementById('quizProgress').innerText = `ข้อ ${currentQuizIndex + 1}/${quizData.length}`;
+            document.getElementById('questionText').innerText = currentData.q;
+
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = "";
+
+            currentData.options.forEach((option, idx) => {
+                const btn = document.createElement('button');
+                btn.classList.add('option-btn');
+                btn.innerText = option;
+                btn.onclick = () => selectOption(btn, idx);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectOption(button, index) {
+            selectedOptionIndex = index;
+            const allButtons = document.querySelectorAll('.option-btn');
+            allButtons.forEach(btn => btn.classList.remove('selected'));
+            button.classList.add('selected');
+            document.getElementById('nextQuizBtn').disabled = false;
+        }
+
+        function submitAnswer() {
+            if (selectedOptionIndex === quizData[currentQuizIndex].correct) {
+                quizScore++;
+            }
+
+            currentQuizIndex++;
+            if (currentQuizIndex < quizData.length) {
+                loadQuiz();
+            } else {
+                showQuizResult();
+            }
+        }
+
+        function showQuizResult() {
+            document.getElementById('quizProgress').innerText = "สรุปผลคะแนน";
+            document.getElementById('questionText').innerText = "เกมตอบคำถามจบแล้วน๊าาา";
+
+            const optionsContainer = document.getElementById('optionsContainer');
+            // โชว์คะแนนดิบๆ และพิมพ์คำแซวตามระดับคะแนนที่แฟนตอบถูก
+            let comment = "พยายามเข้าใหม่อีกนิดนะเค้างอนแล้ว 🥺";
+            if (quizScore >= 8) comment = "เก่งมากกก รู้ใจเค้าที่สุดในโลกเลยยย รักกที่สู๊ดดด! 😘💖";
+            else if (quizScore >= 5) comment = "ใช้ได้เลยนะเนี่ย เก่งเหมือนกันนะเรา 🤍";
+
+            optionsContainer.innerHTML = `
+            <div style="font-size: 24px; font-weight:600; color:#E27B8A; margin-bottom:10px;">ตัวเองได้คะแนน ${quizScore}/${quizData.length}</div>
+            <div style="font-size: 14px; color:#6A6A6A; line-height:1.5;">${comment}</div>
+        `;
+
+            const nextBtn = document.getElementById('nextQuizBtn');
+            nextBtn.innerText = "กลับหน้าเมนู";
+            nextBtn.disabled = false;
+            nextBtn.onclick = () => {
+                document.getElementById('quiz-page').style.display = 'none';
+                document.getElementById('menu-page').style.display = 'flex';
+                // รีเซ็ตปุ่มให้กลับมาทำงานควิซปกติรอบหน้า
+                nextBtn.onclick = submitAnswer;
+            };
+        }
+        // ฟังก์ชันแก้บั๊กกดปุ่มความทรงจำรอบสองแล้วเด้งข้ามหน้า
+function showMemoryAndScroll() {
+    // 1. สั่งซ่อนหน้ารวมเมนูหลักออกไปทันทีแบบเนียนๆ
+    document.getElementById('menu-page').style.display = 'none';
+    
+    // 2. ล้างค่าความสูงที่เคยค้างอยู่ในระบบทั้งหมด ให้หน้าความทรงจำเดิมเปิดสว่างเด้งขึ้นมา 100%
+    const memoryPage = document.getElementById('memory-page');
+    if (memoryPage) {
+        memoryPage.style.display = 'flex'; // สั่งเปิดหน้าความทรงจำดั้งเดิมของนาย
+        memoryPage.scrollIntoView({ behavior: 'auto' }); // รีเซ็ตมุมกล้องให้จอดล็อกกึ่งกลางจอปกติ ไม่ค้างพิกัดเก่า
+    }
+}
+
+
+    </script>
+    <script>
+        // ➡️ ฟังก์ชันสั่งสไลด์หน้าจอเมนูหลักไปทางขวา 100vw เพื่อเปิดตัวหน้าง้อลับ
+        function slideMenuRight() {
+            document.getElementById('menuSlider').style.transform = 'translateX(-100vw)';
+        }
+
+        // ⬅️ ฟังก์ชันสั่งสไลด์หน้าจอกลับมาทางซ้ายที่พิกัดเริ่มต้น 0
+        function slideMenuLeft() {
+            document.getElementById('menuSlider').style.transform = 'translateX(0)';
+        }
+
+        // 📜 ฟังก์ชันของปุ่ม "ง้อที่ร๊ากก" กดยิงยาวสไลด์ดิ่งลงล่างไปหาล็อกพิกัดหน้าใบสัญญารับความผิดทันทีชัวร์ๆ ครับ
+        function scrollFromSecretToPromise() {
+            const promisePage = document.getElementById('promise-page');
+            if (promisePage) {
+                promisePage.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        // ฟังก์ชันแก้บั๊กพาวาปไปหน้าใบสัญญาโดยตรง ไม่สไลด์ลากผ่านหน้าอื่น
+function goToPromiseDirect() {
+    // 1. สั่งซ่อนหน้ารวมเมนูหลักทั้งหมดออกไปทันที (แก้คำสะกดผิดแล้วครับ)
+    document.getElementById('menu-page').style.display = 'none';
+    
+    // 2. สั่งให้หน้าใบสัญญาเด้งโชว์ขึ้นมาเต็มจอมือถือทันทีแบบเนียนๆ
+    const promisePage = document.getElementById('promise-page');
+    if (promisePage) {
+        promisePage.style.display = 'flex';
+        promisePage.scrollIntoView({ behavior: 'auto' }); 
+    }
+}
+
+
+    </script>
+<script>
+   function openGalleryPage() {
+    // สั่งปิดหน้าความทรงจำซึ้งๆ ใบแรก
+    document.getElementById('memory-page').style.display = 'none';
+    // สั่งเปิดแผงกริดรวมรูปภาพ 9 ใบขึ้นมาโชว์ตัวทันที
+    document.getElementById('gallery-page').style.display = 'flex';
+}
+
+
+// ฟังก์ชันเปิดหน้ากริดรูปภาพ พร้อมสั่ง "ปิดซ่อนหน้าใบสัญญาและหน้าอื่นไว้ก่อน" ป้องกันการเลื่อนไหลทะลุเจอ
+function openGalleryPage() {
+    // 1. สั่งซ่อนหน้าเดิมที่เคยเปิดค้างไว้ให้หมด
+    document.getElementById('memory-page').style.display = 'none';
+    if(document.getElementById('promise-page')) document.getElementById('promise-page').style.display = 'none';
+    if(document.getElementById('apology-page')) document.getElementById('apology-page').style.display = 'none';
+    
+    // 2. เปิดเฉพาะหน้าแผงกริดรวมรูปภาพ 20 ใบขึ้นมาโชว์ตัว
+    document.getElementById('gallery-page').style.display = 'flex';
+    
+    // ปลดล็อกให้ลูกกลิ้งเมาส์และนิ้วปัดดูรูป 20 ใบข้างในการ์ดขาวได้ปกติ
+    document.body.style.position = 'static';
+    document.body.style.overflowY = 'auto';
+}
+
+// ฟังก์ชันสั่งปิดหน้าอัลบั้มรูป สลับกลับหน้าเมนู และสั่งล็อกหน้าจอห้ามเลื่อนตามเดิม
+function backToMenuFromGallery() {
+    document.getElementById('gallery-page').style.display = 'none';
+    document.getElementById('menu-page').style.display = 'flex';
+    
+    // ล็อกหน้าจอรวมห้ามเลื่อนไหลตามสเปกดั้งเดิม
+    document.body.style.position = 'fixed';
+    document.body.style.overflow = 'hidden';
+}
+// สั่งการให้ระบบแอบซ่อนหน้าใบสัญญาและหน้าการ์ดง้อปุ่มวิ่งหนีไว้ใต้ดินทันทีตั้งแต่เริ่มรันเว็บแรกสุด
+if(document.getElementById('promise-page')) document.getElementById('promise-page').style.display = 'none';
+if(document.getElementById('apology-page')) document.getElementById('apology-page').style.display = 'none';
+
+
+
+</script>
+<script>
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const closeBtn = document.querySelector('.close-btn');
+    // ดึงรูปภาพทั้งหมดที่ใช้คลาส grid-photo-item ของคุณ
+    const galleryItems = document.querySelectorAll('.grid-photo-item');
+
+    galleryItems.forEach(item => {
+        // เปลี่ยนเมาส์ให้เป็นรูปมือเวลาชี้ที่รูปภาพ จะได้รู้ว่ากดได้
+        item.style.cursor = 'pointer'; 
+        
+        item.addEventListener('click', () => {
+            lightbox.classList.add('active');
+            lightboxImg.src = item.src;
+        });
+    });
+
+    // กดปุ่ม X เพื่อปิด
+    closeBtn.addEventListener('click', () => {
+        lightbox.classList.remove('active');
+    });
+
+    // กดพื้นที่ว่างสีดำเพื่อปิด
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) {
+            lightbox.classList.remove('active');
+        }
+    });
+</script>
+
+</body>
+
+</html>
